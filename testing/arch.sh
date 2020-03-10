@@ -5,6 +5,9 @@
 #DO NOT RUN THIS YOURSELF because Step 1 is it reformatting /dev/sda WITHOUT confirmation,
 #which means RIP in peace qq your data unless you've already backed up all of your drive.
 
+# Load french keyboard layout
+loadkeys fr-latin1
+
 pacman -Sy --noconfirm dialog || { echo "Error at script start: Are you sure you're running this as the root user? Are you sure you have an internet connection?"; exit; }
 
 dialog --defaultno --title "DON'T BE A BRAINLET!" --yesno "This is an Arch install script that is very rough around the edges.\n\nOnly run this script if you're a big-brane who doesn't mind deleting your entire /dev/sda drive.\n\nThis script is only really for me so I can autoinstall Arch.\n\nt. Luke"  15 60 || exit
@@ -26,6 +29,42 @@ fi
 
 timedatectl set-ntp true
 
+# cat <<EOF | fdisk /dev/sda
+# o
+# n
+# p
+# 
+# 
+# +200M
+# n
+# p
+# 
+# 
+# +${SIZE[0]}G
+# n
+# p
+# 
+# 
+# +${SIZE[1]}G
+# n
+# p
+# 
+# 
+# w
+# EOF
+# partprobe
+# 
+# yes | mkfs.ext4 /dev/sda4
+# yes | mkfs.ext4 /dev/sda3
+# yes | mkfs.ext4 /dev/sda1
+# mkswap /dev/sda2
+# swapon /dev/sda2
+# mount /dev/sda3 /mnt
+# mkdir -p /mnt/boot
+# mount /dev/sda1 /mnt/boot
+# mkdir -p /mnt/home
+# mount /dev/sda4 /mnt/home
+
 cat <<EOF | fdisk /dev/sda
 o
 n
@@ -37,18 +76,10 @@ n
 p
 
 
-+${SIZE[0]}G
-n
-p
-
-
-+${SIZE[1]}G
-n
-p
-
 
 w
 EOF
+
 partprobe
 
 yes | mkfs.ext4 /dev/sda4
@@ -64,13 +95,20 @@ mount /dev/sda4 /mnt/home
 
 pacman -Sy --noconfirm archlinux-keyring
 
-pacstrap /mnt base base-devel
+pacstrap /mnt linux linux-firmware base base-devel
 
+# Generate fstab
 genfstab -U /mnt >> /mnt/etc/fstab
+
+# TimeZone
 cat tz.tmp > /mnt/tzfinal.tmp
 rm tz.tmp
+
+# Hostname
 mv comp /mnt/etc/hostname
-curl https://raw.githubusercontent.com/LukeSmithxyz/LARBS/master/testing/chroot.sh > /mnt/chroot.sh && arch-chroot /mnt bash chroot.sh && rm /mnt/chroot.sh
+
+# Run chroot script
+curl https://raw.githubusercontent.com/GaetanLepage/LARBS/master/testing/chroot.sh > /mnt/chroot.sh && arch-chroot /mnt bash chroot.sh && rm /mnt/chroot.sh
 
 
 dialog --defaultno --title "Final Qs" --yesno "Reboot computer?"  5 30 && reboot
