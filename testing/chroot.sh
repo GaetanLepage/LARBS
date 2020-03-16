@@ -13,15 +13,14 @@ echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
 echo "en_US ISO-8859-1" >> /etc/locale.gen
 locale-gen
 
-# Change keyboard layour permanently
+# Change keyboard layout permanently
 echo "KEYMAP=fr-latin1" > /etc/vconsole.conf
 
 pacman --noconfirm --needed -S networkmanager
 systemctl enable NetworkManager
-systemctl start NetworkManager
+#systemctl start NetworkManager
 
-#pacman --noconfirm --needed -S grub && grub-install --target=i386-pc /dev/sda && grub-mkconfig -o /boot/grub/grub.cfg
-pacman --noconfirm --needed -S grub && grub-install /dev/sda && grub-mkconfig -o /boot/grub/grub.cfg
+pacman --noconfirm --needed -S grub efibootmgr && grub-install /dev/sda && grub-mkconfig -o /boot/grub/grub.cfg
 
 pacman --noconfirm --needed -S dialog
 larbs() { curl -O https://raw.githubusercontent.com/GaetanLepage/LARBS/master/larbs.sh && bash larbs.sh ;}
