@@ -211,9 +211,9 @@ installationloop
 # Install the dotfiles in the user's home directory
 #putgitrepo "$dotfilesrepo" "/home/$name" "$repobranch"
 echo "Cloning dotfiles repo"
-putgitrepo "$dotfilesrepo" "/home/.dotfiles"
+putgitrepo "$dotfilesrepo" "/home/$name/.dotfiles"
 #rm -rf /home/gaetan/.config/*
-/home/$name/.dotfiles/stow-everything.sh
+bash /home/$name/.dotfiles/stow-everything.sh
 
 # Installing p10k
 git clone --depth=1 https://github.com/romkatv/powerlevel10k.git $ZSH_CUSTOM/themes/powerlevel10k
