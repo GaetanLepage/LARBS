@@ -218,6 +218,9 @@ putgitrepo "$dotfilesrepo" "/home/.dotfiles"
 # Installing p10k
 git clone --depth=1 https://github.com/romkatv/powerlevel10k.git $ZSH_CUSTOM/themes/powerlevel10k
 
+# Installing zsh-autosuggestions
+git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+
 rm -f "/home/$name/README.md" "/home/$name/LICENSE"
 
 # Most important command! Get rid of the beep!
