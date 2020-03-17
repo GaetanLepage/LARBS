@@ -71,11 +71,6 @@ n
 p
 
 
-+450M
-n
-p
-
-
 
 w
 EOF
@@ -84,14 +79,14 @@ partprobe
 
 #yes | mkfs.ext4 /dev/sda4
 #yes | mkfs.ext4 /dev/sda3
-yes | mkfs.fat -F32 /dev/sda1
-yes | mkfs.ext4 /dev/sda2
+#yes | mkfs.fat -F32 /dev/sda1
+yes | mkfs.ext4 /dev/sda1
 #mkswap /dev/sda2
 #swapon /dev/sda2
-mount /dev/sda2 /mnt
+mount /dev/sda1 /mnt
 #mount /dev/sda3 /mnt
-mkdir -p /mnt/boot
-mount /dev/sda1 /mnt/boot
+#mkdir -p /mnt/boot
+#mount /dev/sda1 /mnt/boot
 #mkdir -p /mnt/home
 #mount /dev/sda4 /mnt/home
 
