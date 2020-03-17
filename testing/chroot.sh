@@ -20,7 +20,10 @@ pacman --noconfirm --needed -S networkmanager
 systemctl enable NetworkManager
 #systemctl start NetworkManager
 
-pacman --noconfirm --needed -S grub efibootmgr && grub-install /dev/sda && grub-mkconfig -o /boot/grub/grub.cfg
+# Install bootloader (grub)
+pacman --noconfirm --needed -S grub efibootmgr
+grub-install --target=x86_64-efi --efi-directory=/boot
+grub-mkconfig -o /boot/grub/grub.cfg
 
 pacman --noconfirm --needed -S dialog
 larbs() { curl -O https://raw.githubusercontent.com/GaetanLepage/LARBS/master/larbs.sh && bash larbs.sh ;}

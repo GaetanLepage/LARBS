@@ -215,6 +215,9 @@ putgitrepo "$dotfilesrepo" "/home/.dotfiles"
 #rm -rf /home/gaetan/.config/*
 /home/$name/.dotfiles/stow-everything.sh
 
+# Installing p10k
+git clone --depth=1 https://github.com/romkatv/powerlevel10k.git $ZSH_CUSTOM/themes/powerlevel10k
+
 rm -f "/home/$name/README.md" "/home/$name/LICENSE"
 
 # Most important command! Get rid of the beep!
