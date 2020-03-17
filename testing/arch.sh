@@ -16,7 +16,7 @@ dialog --defaultno --title "DON'T BE A BRAINLET!" --yesno "Do you think I'm memi
 
 dialog --no-cancel --inputbox "Enter a name for your computer." 10 60 2> comp
 
-dialog --defaultno --title "Time Zone select" --yesno "Do you want use the default time zone(Europe/Paris)?.\n\nPress no for select your own time zone"  10 60 && echo "Europe/Paris" > tz.tmp || tzselect > tz.tmp
+dialog --title "Time Zone select" --yesno "Do you want use the default time zone(Europe/Paris)?.\n\nPress no for select your own time zone"  10 60 && echo "Europe/Paris" > tz.tmp || tzselect > tz.tmp
 
 #dialog --no-cancel --inputbox "Enter partitionsize in gb, separated by space (swap & root)." 10 60 2>psize
 
@@ -94,6 +94,9 @@ mkdir -p /mnt/boot
 mount /dev/sda1 /mnt/boot
 #mkdir -p /mnt/home
 #mount /dev/sda4 /mnt/home
+
+# Set pacman options
+echo "Total"
 
 pacman -Sy --noconfirm archlinux-keyring
 
