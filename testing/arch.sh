@@ -66,9 +66,14 @@ timedatectl set-ntp true
 # mount /dev/sda4 /mnt/home
 
 cat <<EOF | fdisk /dev/sda
-o
+g
 n
-p
+
+
++450M
+t
+1
+n
 
 
 
@@ -79,14 +84,14 @@ partprobe
 
 #yes | mkfs.ext4 /dev/sda4
 #yes | mkfs.ext4 /dev/sda3
-#yes | mkfs.fat -F32 /dev/sda1
-yes | mkfs.ext4 /dev/sda1
+yes | mkfs.fat -F32 /dev/sda1
+yes | mkfs.ext4 /dev/sda2
 #mkswap /dev/sda2
 #swapon /dev/sda2
-mount /dev/sda1 /mnt
+mount /dev/sda2 /mnt
 #mount /dev/sda3 /mnt
-#mkdir -p /mnt/boot
-#mount /dev/sda1 /mnt/boot
+mkdir -p /mnt/boot
+mount /dev/sda1 /mnt/boot
 #mkdir -p /mnt/home
 #mount /dev/sda4 /mnt/home
 
@@ -108,6 +113,8 @@ mv comp /mnt/etc/hostname
 curl https://raw.githubusercontent.com/GaetanLepage/LARBS/master/testing/chroot.sh > /mnt/chroot.sh
 arch-chroot /mnt bash chroot.sh
 rm /mnt/chroot.sh
+
+umount -a
 
 
 dialog --defaultno --title "Final Qs" --yesno "Reboot computer?"  5 30 && reboot
