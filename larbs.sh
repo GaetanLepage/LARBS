@@ -38,6 +38,19 @@ welcomemsg() { \
 	dialog --title "Welcome!" --msgbox "Welcome to Luke's Auto-Rice Bootstrapping Script!\\n\\nThis script will automatically install a fully-featured Linux desktop, which I use as my main machine.\\n\\n-Luke" 10 60
 	}
 
+set_pacman_options() {\
+
+    # Set pacman options
+    sed -i 's/#\(Color\)/\1/' /etc/pacman.conf
+    sed -i 's/#\(TotalDownload\)/\1/' /etc/pacman.conf
+
+    # Changing default pacman mirror
+    MIR_LIST="/etc/pacman.d/mirrorlist"
+    FR_SERV=$(grep -A 1 -m 1 "## France" $MIR_LIST | tail -1)
+    echo $FR_SERV | cat - $MIR_LIST > tmp
+    mv tmp $MIR_LIST
+    }
+
 selectdotfiles() { \
 	edition="$(dialog --title "Select LARBS version." --menu "Select which version of LARBS you wish to have as default:" 10 70 2 i3 "The classic version of LARBS using i3." dwm "The version of LARBS using suckless's dwm." custom "If you are supplying commandline options for LARBS." 3>&1 1>&2 2>&3 3>&1)" || error "User exited."
 	}
@@ -179,6 +192,8 @@ preinstallmsg || error "User exited."
 ### The rest of the script requires no user input.
 
 adduserandpass || error "Error adding username and/or password."
+
+set_pacman_options
 
 # Refresh Arch keyrings.
 # refreshkeys || error "Error automatically refreshing Arch keyring. Consider doing so manually."
