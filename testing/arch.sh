@@ -8,6 +8,16 @@
 # Load french keyboard layout
 loadkeys fr-latin1
 
+# Set pacman options
+sed -i 's/#\(Color\)/\1/' /etc/pacman.conf
+sed -i 's/#\(TotalDownload\)/\1/' /etc/pacman.conf
+
+# Changing default pacman mirror
+MIR_LIST="/etc/pacman.d/mirrorlist"
+FR_SERV=$(grep -A 1 -m 1 "## France" $MIR_LIST | tail -1)
+echo $FR_SERV | cat - $MIR_LIST > tmp
+mv tmp $MIR_LIST
+
 pacman -Sy --noconfirm dialog || { echo "Error at script start: Are you sure you're running this as the root user? Are you sure you have an internet connection?"; exit; }
 
 dialog --defaultno --title "DON'T BE A BRAINLET!" --yesno "This is an Arch install script that is very rough around the edges.\n\nOnly run this script if you're a big-brane who doesn't mind deleting your entire /dev/sda drive.\n\nThis script is only really for me so I can autoinstall Arch.\n\nt. Luke"  15 60 || exit
@@ -30,7 +40,7 @@ dialog --title "Time Zone select" --yesno "Do you want use the default time zone
 timedatectl set-ntp true
 
 # cat <<EOF | fdisk /dev/sda
-# o
+# g
 # n
 # p
 #
@@ -95,11 +105,9 @@ mount /dev/sda1 /mnt/boot
 #mkdir -p /mnt/home
 #mount /dev/sda4 /mnt/home
 
-# Set pacman options
-echo "Total"
-
 pacman -Sy --noconfirm archlinux-keyring
 
+# Installing main packages
 pacstrap /mnt linux linux-firmware base base-devel
 
 # Generate fstab
