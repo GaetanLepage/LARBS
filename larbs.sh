@@ -223,12 +223,18 @@ manualinstall $aurhelper || error "Failed to install AUR helper."
 # and all build dependencies are installed.
 installationloop
 
+# TODO : temporal fix for permission of .local folder
+chown -R gaetan /home/gaetan/
+
 # Install the dotfiles in the user's home directory
 #putgitrepo "$dotfilesrepo" "/home/$name" "$repobranch"
 echo "Cloning dotfiles repo"
 putgitrepo "$dotfilesrepo" "/home/$name/.dotfiles"
 #rm -rf /home/gaetan/.config/*
 bash /home/$name/.dotfiles/stow-everything.sh
+
+# Installing oh-my-zsh
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 
 # Installing p10k
 git clone --depth=1 https://github.com/romkatv/powerlevel10k.git $ZSH_CUSTOM/themes/powerlevel10k
