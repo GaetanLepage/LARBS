@@ -238,6 +238,9 @@ newperms "%wheel ALL=(ALL) NOPASSWD: ALL"
 # Use all cores for compilation.
 sed -i "s/-j2/-j$(nproc)/;s/^#MAKEFLAGS/MAKEFLAGS/" /etc/makepkg.conf
 
+ls -al /home/$name/
+sleep 8
+
 manualinstall $aurhelper || error "Failed to install AUR helper."
 
 ls -al /home/$name/
