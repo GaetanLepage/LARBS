@@ -75,6 +75,10 @@ timedatectl set-ntp true
 # mkdir -p /mnt/home
 # mount /dev/sda4 /mnt/home
 
+# Erase partition table
+wipefs -a -f /dev/sda
+
+# Create partitions
 cat <<EOF | fdisk /dev/sda
 g
 n
