@@ -240,8 +240,15 @@ sed -i "s/-j2/-j$(nproc)/;s/^#MAKEFLAGS/MAKEFLAGS/" /etc/makepkg.conf
 
 manualinstall $aurhelper || error "Failed to install AUR helper."
 
+ls -al /home/$name/
+sleep 8
+
 # manually creating .local directories
 sudo -u "$name" mkdir -p /home/$name/.local/bin /home/$name/.local/share /home/$name/Downloads
+
+ls -al /home/$name/
+sleep 8
+
 
 # The command that does all the installing. Reads the progs.csv file and
 # installs each needed program the way required. Be sure to run this only after
