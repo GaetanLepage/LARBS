@@ -43,7 +43,9 @@ set_pacman_options() {\
 
     # Set pacman options
     sed -i 's/#\(Color\)/\1/' /etc/pacman.conf
-    sed -i 's/#\(TotalDownload\)/\1/' /etc/pacman.conf
+    grep "^Color" /etc/pacman.conf >/dev/null || sed -i "s/^#Color/Color/" /etc/pacman.conf
+    grep "^TotalDownload" /etc/pacman.conf >/dev/null || sed -i "s/^#TotalDownload/TotalDownload/" /etc/pacman.conf
+    #sed -i 's/#\(TotalDownload\)/\1/' /etc/pacman.conf
 
     # Changing default pacman mirror
     MIR_LIST="/etc/pacman.d/mirrorlist"
@@ -54,7 +56,7 @@ set_pacman_options() {\
 
 selectdotfiles() { \
 	#edition="$(dialog --title "Select LARBS version." --menu "Select which version of LARBS you wish to have as default:" 10 70 2 i3 "The classic version of LARBS using i3." dwm "The version of LARBS using suckless's dwm." custom "If you are supplying commandline options for LARBS." 3>&1 1>&2 2>&3 3>&1)" || error "User exited."
-    $edition=i3
+    edition=i3
 	}
 
 getuserandpass() { \
@@ -230,7 +232,7 @@ installpkg git
 newperms "%wheel ALL=(ALL) NOPASSWD: ALL"
 
 # Make pacman and yay colorful and adds eye candy on the progress bar because why not.
-grep "^Color" /etc/pacman.conf >/dev/null || sed -i "s/^#Color/Color/" /etc/pacman.conf
+#grep "^Color" /etc/pacman.conf >/dev/null || sed -i "s/^#Color/Color/" /etc/pacman.conf
 #grep "ILoveCandy" /etc/pacman.conf >/dev/null || sed -i "/#VerbosePkgLists/a ILoveCandy" /etc/pacman.conf
 
 # Use all cores for compilation.
@@ -282,8 +284,6 @@ dbus-uuidgen > /var/lib/dbus/machine-id
 # Let LARBS know the WM it's supposed to run.
 echo "$edition" > "/home/$name/.local/share/larbs/wm"; chown "$name:wheel" "/home/$name/.local/share/larbs/wm"
 
-sleep 10
-
 # Last message! Install complete!
-#finalize
-#clear
+finalize
+clear
