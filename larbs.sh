@@ -166,7 +166,7 @@ putgitrepo() { # Downloads a gitrepo $1 and places the files in $2 only overwrit
 
 install_zsh() { # Installs oh-my-zsh, powerlevel10k and zsh-autosuggestions
     # Installing oh-my-zsh
-    sudo -u "$name" sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+    sudo -u "$name" sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh --unattended --keep-zshrc)"
 
     # Installing p10k
     putgitrepo https://github.com/romkatv/powerlevel10k.git $ZSH_CUSTOM/themes/powerlevel10k
