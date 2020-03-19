@@ -216,10 +216,13 @@ preinstallmsg || error "User exited."
 
 adduserandpass || error "Error adding username and/or password."
 
+# manually creating .local directories
+sudo -u "$name" mkdir -p /home/$name/.local/bin /home/$name/.local/share /home/$name/Downloads
+
 set_pacman_options
 
 # Refresh Arch keyrings.
-# refreshkeys || error "Error automatically refreshing Arch keyring. Consider doing so manually."
+refreshkeys || error "Error automatically refreshing Arch keyring. Consider doing so manually."
 
 dialog --title "LARBS Installation" --infobox "Installing \`basedevel\` and \`git\` for installing other software." 5 70
 installpkg curl
@@ -238,20 +241,7 @@ newperms "%wheel ALL=(ALL) NOPASSWD: ALL"
 # Use all cores for compilation.
 sed -i "s/-j2/-j$(nproc)/;s/^#MAKEFLAGS/MAKEFLAGS/" /etc/makepkg.conf
 
-ls -al /home/$name/
-sleep 8
-
 manualinstall $aurhelper || error "Failed to install AUR helper."
-
-ls -al /home/$name/
-sleep 8
-
-# manually creating .local directories
-sudo -u "$name" mkdir -p /home/$name/.local/bin /home/$name/.local/share /home/$name/Downloads
-
-ls -al /home/$name/
-sleep 8
-
 
 # The command that does all the installing. Reads the progs.csv file and
 # installs each needed program the way required. Be sure to run this only after
