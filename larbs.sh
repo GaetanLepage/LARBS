@@ -245,6 +245,8 @@ ntp 0.fr.pool.ntp.org >/dev/null 2>&1
 	sed -i "s/-j2/-j$(nproc)/;s/^#MAKEFLAGS/MAKEFLAGS/" /etc/makepkg.conf
 
 	manualinstall $aurhelper || error "Failed to install AUR helper."
+
+    chown -R "$name":wheel /home/$name/.local
 	}
 
 # The command that does all the installing. Reads the progs.csv file and
