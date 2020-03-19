@@ -163,6 +163,7 @@ putgitrepo() { # Downloads a gitrepo $1 and places the files in $2 only overwrit
 	[ ! -d "$2" ] && mkdir -p "$2"
     chown -R "$name:wheel" "$dir" "$2"
 	sudo -u "$name" git clone -b "$branch" --depth 1 "$1" "$dir" #>/dev/null 2>&1
+    sudo -u "$name" cp -rfT "$dir" "$2"
 	}
 
 install_zsh() { # Installs oh-my-zsh, powerlevel10k and zsh-autosuggestions
