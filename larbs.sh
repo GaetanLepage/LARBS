@@ -28,6 +28,7 @@ elif type apt >/dev/null 2>&1; then
 	installpkg(){ apt-get install -y "$1" >/dev/null 2>&1 ;}
 	grepseq="\"^[PGU]*,\""
 else
+    distro="arch"
 	#installpkg(){ pacman --noconfirm --needed -S "$1" >/dev/null 2>&1 ;}
 	installpkg(){ pacman --noconfirm --needed -S "$1" ;} # TODO remove
 	grepseq="\"^[PGA]*,\""
@@ -40,7 +41,6 @@ welcomemsg() { \
 	}
 
 set_pacman_options() {\
-
     # Set pacman options
     sed -i 's/#\(Color\)/\1/' /etc/pacman.conf
     grep "^Color" /etc/pacman.conf >/dev/null || sed -i "s/^#Color/Color/" /etc/pacman.conf
@@ -62,7 +62,6 @@ selectdotfiles() { \
 getuserandpass() { \
 	# Prompts user for new username an password.
 	name=$(dialog --inputbox "First, please enter a name for the user account." 10 60 3>&1 1>&2 2>&3 3>&1) || exit
-	repodir="/home/$name/.local/src"; mkdir -p "$repodir"
 	while ! echo "$name" | grep "^[a-z_][a-z0-9_-]*$" >/dev/null 2>&1; do
 		name=$(dialog --no-cancel --inputbox "Username not valid. Give a username beginning with a letter, with only lowercase letters, - or _." 10 60 3>&1 1>&2 2>&3 3>&1)
 	done
@@ -88,6 +87,7 @@ adduserandpass() { \
 	dialog --infobox "Adding user \"$name\"..." 4 50
 	useradd -m -g wheel -s /bin/bash "$name" >/dev/null 2>&1 ||
 	usermod -a -G wheel "$name" && mkdir -p /home/"$name" && chown "$name":wheel /home/"$name"
+	repodir="/home/$name/.local/src"; mkdir -p "$repodir"; chown -R "$name":wheel "$repodir"
 	echo "$name:$pass1" | chpasswd
 	unset pass1 pass2 ;}
 
@@ -120,7 +120,7 @@ gitmakeinstall() {
 	progname="$(basename "$1")"
 	dir="$repodir/$progname"
 	#dialog --title "LARBS Installation" --infobox "Installing \`$progname\` ($n of $total) via \`git\` and \`make\`. $(basename "$1") $2" 5 70
-	git clone --depth 1 "$1" "$dir" >/dev/null 2>&1 || { cd "$dir" || return ; git pull --force origin master;}
+	sudo -u "$name" git clone --depth 1 "$1" "$dir" >/dev/null 2>&1 || { cd "$dir" || return ; sudo -u "$name" git pull --force origin master;}
 	cd "$dir" || exit
 	make >/dev/null 2>&1
 	make install >/dev/null 2>&1
@@ -154,24 +154,21 @@ installationloop() { \
 			"P") pipinstall "$program" "$comment" ;;
 			*) maininstall "$program" "$comment" ;;
 		esac
-        #TODO remove
-        if [ -d "/home/$name/.local"]; then
-            ls -al /home/$name/.local
-            sleep 8
-        fi
 	done < /tmp/progs.csv ;}
 
 putgitrepo() { # Downloads a gitrepo $1 and places the files in $2 only overwriting conflicts
 	#dialog --infobox "Downloading and installing config files..." 4 60
 	[ -z "$3" ] && branch="master" || branch="$repobranch"
 	dir=$(mktemp -d)
-	[ ! -d "$2" ] && mkdir -p "$2" && chown -R "$name:wheel" "$2"
-	chown -R "$name:wheel" "$dir"
-	sudo -u "$name" git clone -b "$branch" --depth 1 "$1" "$dir/gitrepo" >/dev/null 2>&1
-	sudo -u "$name" cp -rfT "$dir/gitrepo" "$2"
+	[ ! -d "$2" ] && mkdir -p "$2"
+    chown -R "$name:wheel" "$dir" "$2"
+	sudo -u "$name" git clone -b "$branch" --depth 1 "$1" "$dir" >/dev/null 2>&1
 	}
 
 install_zsh() { # Installs oh-my-zsh, powerlevel10k and zsh-autosuggestions
+    # Make zsh the default shell for the user.
+    sed -i "s/^$name:\(.*\):\/bin\/.*/$name:\1:\/bin\/zsh/" /etc/passwd
+
     # Installing oh-my-zsh
     sudo -u "$name" sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" --unattended --keep-zshrc
 
@@ -217,31 +214,38 @@ preinstallmsg || error "User exited."
 adduserandpass || error "Error adding username and/or password."
 
 # manually creating .local directories
-sudo -u "$name" mkdir -p /home/$name/.local/bin /home/$name/.local/share /home/$name/Downloads
+#sudo -u "$name" mkdir -p /home/$name/.local/bin /home/$name/.local/share /home/$name/Downloads
 
 set_pacman_options
 
 # Refresh Arch keyrings.
-refreshkeys || error "Error automatically refreshing Arch keyring. Consider doing so manually."
+#refreshkeys || error "Error automatically refreshing Arch keyring. Consider doing so manually."
 
 dialog --title "LARBS Installation" --infobox "Installing \`basedevel\` and \`git\` for installing other software." 5 70
 installpkg curl
 installpkg base-devel
 installpkg git
-[ -f /etc/sudoers.pacnew ] && cp /etc/sudoers.pacnew /etc/sudoers # Just in case
+installpkg ntp
 
-# Allow user to run sudo without password. Since AUR programs must be installed
-# in a fakeroot environment, this is required for all builds with AUR.
-newperms "%wheel ALL=(ALL) NOPASSWD: ALL"
+dialog --title "LARBS Installation" --infobox "Synchronizing system time to ensure successful and secure installation of software..." 4 70
+ntp 0.fr.pool.ntp.org >/dev/null 2>&1
 
-# Make pacman and yay colorful and adds eye candy on the progress bar because why not.
-#grep "^Color" /etc/pacman.conf >/dev/null || sed -i "s/^#Color/Color/" /etc/pacman.conf
-#grep "ILoveCandy" /etc/pacman.conf >/dev/null || sed -i "/#VerbosePkgLists/a ILoveCandy" /etc/pacman.conf
+[ "$distro" = arch ] && { \
+	[ -f /etc/sudoers.pacnew ] && cp /etc/sudoers.pacnew /etc/sudoers # Just in case
 
-# Use all cores for compilation.
-sed -i "s/-j2/-j$(nproc)/;s/^#MAKEFLAGS/MAKEFLAGS/" /etc/makepkg.conf
+	# Allow user to run sudo without password. Since AUR programs must be installed
+	# in a fakeroot environment, this is required for all builds with AUR.
+	newperms "%wheel ALL=(ALL) NOPASSWD: ALL"
 
-manualinstall $aurhelper || error "Failed to install AUR helper."
+	# Make pacman and yay colorful and adds eye candy on the progress bar because why not.
+	#grep "^Color" /etc/pacman.conf >/dev/null || sed -i "s/^#Color$/Color/" /etc/pacman.conf
+	#grep "ILoveCandy" /etc/pacman.conf >/dev/null || sed -i "/#VerbosePkgLists/a ILoveCandy" /etc/pacman.conf
+
+	# Use all cores for compilation.
+	sed -i "s/-j2/-j$(nproc)/;s/^#MAKEFLAGS/MAKEFLAGS/" /etc/makepkg.conf
+
+	manualinstall $aurhelper || error "Failed to install AUR helper."
+	}
 
 # The command that does all the installing. Reads the progs.csv file and
 # installs each needed program the way required. Be sure to run this only after
@@ -249,31 +253,33 @@ manualinstall $aurhelper || error "Failed to install AUR helper."
 # and all build dependencies are installed.
 installationloop
 
+dialog --title "LARBS Installation" --infobox "Finally, installing \`libxft-bgra\` to enable color emoji in suckless software without crashes." 5 70
+yes | sudo -u "$name" $aurhelper -S libxft-bgra >/dev/null 2>&1
+
 # Install the dotfiles in the user's home directory
 echo "Cloning dotfiles repo"
 putgitrepo "$dotfilesrepo" "/home/$name/.dotfiles"
-sudo -u "$name" bash /home/$name/.dotfiles/stow_everything.sh
 
-install_zsh
+sudo -u "$name" bash /home/$name/.dotfiles/stow_everything.sh
 
 rm -f "/home/$name/README.md" "/home/$name/LICENSE"
 
+# Installing zsh tools
+install_zsh
+
 # Most important command! Get rid of the beep!
 systembeepoff
-
-# This line, overwriting the `newperms` command above will allow the user to run
-# serveral important commands, `shutdown`, `reboot`, updating, etc. without a password.
-newperms "%wheel ALL=(ALL) ALL #LARBS
-%wheel ALL=(ALL) NOPASSWD: /usr/bin/shutdown,/usr/bin/reboot,/usr/bin/systemctl suspend,/usr/bin/wifi-menu,/usr/bin/mount,/usr/bin/umount,/usr/bin/pacman -Syu,/usr/bin/pacman -Syyu,/usr/bin/packer -Syu,/usr/bin/packer -Syyu,/usr/bin/systemctl restart NetworkManager,/usr/bin/rc-service NetworkManager restart,/usr/bin/pacman -Syyu --noconfirm,/usr/bin/loadkeys,/usr/bin/yay,/usr/bin/pacman -Syyuw --noconfirm"
-
-# Make zsh the default shell for the user.
-sed -i "s/^$name:\(.*\):\/bin\/.*/$name:\1:\/bin\/zsh/" /etc/passwd
 
 # dbus UUID must be generated for Artix runit.
 dbus-uuidgen > /var/lib/dbus/machine-id
 
 # Let LARBS know the WM it's supposed to run.
-echo "$edition" > "/home/$name/.local/share/larbs/wm"; chown "$name:wheel" "/home/$name/.local/share/larbs/wm"
+echo "$edition" > "/home/$name/.local/share/larbs/wm"; chown -R "$name":wheel "/home/$name/.local"
+
+# This line, overwriting the `newperms` command above will allow the user to run
+# serveral important commands, `shutdown`, `reboot`, updating, etc. without a password.
+[ "$distro" = arch ] && newperms "%wheel ALL=(ALL) ALL #LARBS
+%wheel ALL=(ALL) NOPASSWD: /usr/bin/shutdown,/usr/bin/reboot,/usr/bin/systemctl suspend,/usr/bin/wifi-menu,/usr/bin/mount,/usr/bin/umount,/usr/bin/pacman -Syu,/usr/bin/pacman -Syyu,/usr/bin/packer -Syu,/usr/bin/packer -Syyu,/usr/bin/systemctl restart NetworkManager,/usr/bin/rc-service NetworkManager restart,/usr/bin/pacman -Syyu --noconfirm,/usr/bin/loadkeys,/usr/bin/yay,/usr/bin/pacman -Syyuw --noconfirm"
 
 # Last message! Install complete!
 finalize
