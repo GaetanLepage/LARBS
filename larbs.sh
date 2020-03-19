@@ -163,6 +163,17 @@ putgitrepo() { # Downloads a gitrepo $1 and places the files in $2 only overwrit
 	sudo -u "$name" cp -rfT "$dir/gitrepo" "$2"
 	}
 
+install_zsh() { # Installs oh-my-zsh, powerlevel10k and zsh-autosuggestions
+    # Installing oh-my-zsh
+    sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+
+    # Installing p10k
+    putgitrepo https://github.com/romkatv/powerlevel10k.git $ZSH_CUSTOM/themes/powerlevel10k
+
+    # Installing zsh-autosuggestions
+    putgitrepo https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+    }
+
 systembeepoff() { dialog --infobox "Getting rid of that retarded error beep sound..." 10 50
 	rmmod pcspkr
 	echo "blacklist pcspkr" > /etc/modprobe.d/nobeep.conf ;}
@@ -232,14 +243,7 @@ echo "Cloning dotfiles repo"
 putgitrepo "$dotfilesrepo" "/home/$name/.dotfiles"
 sudo -u "$name" bash /home/$name/.dotfiles/stow_everything.sh
 
-# Installing oh-my-zsh
-#sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-
-# Installing p10k
-putgitrepo https://github.com/romkatv/powerlevel10k.git $ZSH_CUSTOM/themes/powerlevel10k
-
-# Installing zsh-autosuggestions
-putgitrepo https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+install_zsh
 
 rm -f "/home/$name/README.md" "/home/$name/LICENSE"
 
