@@ -282,6 +282,8 @@ dbus-uuidgen > /var/lib/dbus/machine-id
 # Let LARBS know the WM it's supposed to run.
 echo "$edition" > "/home/$name/.local/share/larbs/wm"; chown "$name:wheel" "/home/$name/.local/share/larbs/wm"
 
+sleep 10
+
 # Last message! Install complete!
 #finalize
 #clear
