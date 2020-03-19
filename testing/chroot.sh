@@ -1,6 +1,16 @@
 #Potential variables: timezone, lang and local
 
-passwd
+getuserandpass() { \
+	# Prompts user for new username an password.
+	pass1=$(dialog --no-cancel --passwordbox "Enter a password for root." 10 60 3>&1 1>&2 2>&3 3>&1)
+	pass2=$(dialog --no-cancel --passwordbox "Retype password." 10 60 3>&1 1>&2 2>&3 3>&1)
+	while ! [ "$pass1" = "$pass2" ]; do
+		unset pass2
+		pass1=$(dialog --no-cancel --passwordbox "Passwords do not match.\\n\\nEnter password again." 10 60 3>&1 1>&2 2>&3 3>&1)
+		pass2=$(dialog --no-cancel --passwordbox "Retype password." 10 60 3>&1 1>&2 2>&3 3>&1)
+	done ;}
+
+echo "root:$pass1" | chpasswd
 
 TZuser=$(cat tzfinal.tmp)
 
