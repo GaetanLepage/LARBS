@@ -10,6 +10,11 @@ getuserandpass() { \
 		pass2=$(dialog --no-cancel --passwordbox "Retype password." 10 60 3>&1 1>&2 2>&3 3>&1)
 	done ;}
 
+
+pacman --noconfirm --needed -S dialog
+
+getuserandpass
+
 echo "root:$pass1" | chpasswd
 
 TZuser=$(cat tzfinal.tmp)
