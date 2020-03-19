@@ -4,7 +4,7 @@
 ,blueman,"is a manager for bluetooth devices"
 ,cmake,
 ,conky,"is a system monitor"
-,dosfstool,"allows your computer to access dos-like filesystems."
+,dosfstools,"allows your computer to access dos-like filesystems."
 ,dunst,"is a suckless notification system"
 ,evince,"is the gnome default PDF viewer"
 ,exfat-utils,"allows management of FAT drives."
