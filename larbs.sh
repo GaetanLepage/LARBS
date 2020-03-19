@@ -283,5 +283,5 @@ dbus-uuidgen > /var/lib/dbus/machine-id
 echo "$edition" > "/home/$name/.local/share/larbs/wm"; chown "$name:wheel" "/home/$name/.local/share/larbs/wm"
 
 # Last message! Install complete!
-finalize
-clear
+#finalize
+#clear
