@@ -155,7 +155,7 @@ installationloop() { \
 	done < /tmp/progs.csv ;}
 
 putgitrepo() { # Downloads a gitrepo $1 and places the files in $2 only overwriting conflicts
-	dialog --infobox "Downloading and installing config files..." 4 60
+	#dialog --infobox "Downloading and installing config files..." 4 60
 	[ -z "$3" ] && branch="master" || branch="$repobranch"
 	dir=$(mktemp -d)
 	[ ! -d "$2" ] && mkdir -p "$2" && chown -R "$name:wheel" "$2"
@@ -239,12 +239,24 @@ manualinstall $aurhelper || error "Failed to install AUR helper."
 # and all build dependencies are installed.
 installationloop
 
+# TODO remove
+ls -al /home/$name
+sleep 4
+
 # Install the dotfiles in the user's home directory
 echo "Cloning dotfiles repo"
 putgitrepo "$dotfilesrepo" "/home/$name/.dotfiles"
 sudo -u "$name" bash /home/$name/.dotfiles/stow_everything.sh
 
+# TODO remove
+ls -al /home/$name
+sleep 4
+
 install_zsh
+
+# TODO remove
+ls -al /home/$name
+sleep 4
 
 rm -f "/home/$name/README.md" "/home/$name/LICENSE"
 
@@ -268,6 +280,7 @@ echo "$edition" > "/home/$name/.local/share/larbs/wm"; chown "$name:wheel" "/hom
 echo "EDITION = "
 echo "$edition"
 echo "___________"
+sleep 5
 
 # Last message! Install complete!
 finalize
