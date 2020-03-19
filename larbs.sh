@@ -240,30 +240,21 @@ sed -i "s/-j2/-j$(nproc)/;s/^#MAKEFLAGS/MAKEFLAGS/" /etc/makepkg.conf
 
 manualinstall $aurhelper || error "Failed to install AUR helper."
 
+# manually creating .local directories
+sudo -u "$name" mkdir -p /home/$name/.local/bin /home/$name/.local/share
+
 # The command that does all the installing. Reads the progs.csv file and
 # installs each needed program the way required. Be sure to run this only after
 # the user has been created and has priviledges to run sudo without a password
 # and all build dependencies are installed.
 installationloop
 
-# TODO remove
-ls -al /home/$name
-sleep 4
-
 # Install the dotfiles in the user's home directory
 echo "Cloning dotfiles repo"
 putgitrepo "$dotfilesrepo" "/home/$name/.dotfiles"
 sudo -u "$name" bash /home/$name/.dotfiles/stow_everything.sh
 
-# TODO remove
-ls -al /home/$name
-sleep 4
-
 install_zsh
-
-# TODO remove
-ls -al /home/$name
-sleep 4
 
 rm -f "/home/$name/README.md" "/home/$name/LICENSE"
 
