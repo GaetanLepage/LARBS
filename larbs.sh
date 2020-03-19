@@ -28,7 +28,8 @@ elif type apt >/dev/null 2>&1; then
 	installpkg(){ apt-get install -y "$1" >/dev/null 2>&1 ;}
 	grepseq="\"^[PGU]*,\""
 else
-	installpkg(){ pacman --noconfirm --needed -S "$1" >/dev/null 2>&1 ;}
+	#installpkg(){ pacman --noconfirm --needed -S "$1" >/dev/null 2>&1 ;}
+	installpkg(){ pacman --noconfirm --needed -S "$1" ;} # TODO remove
 	grepseq="\"^[PGA]*,\""
 fi
 
@@ -125,12 +126,12 @@ gitmakeinstall() {
 aurinstall() { \
     #dialog --title "LARBS Installation" --infobox "Installing \`$1\` ($n of $total) from the AUR. $1 $2" 5 70
 	echo "$aurinstalled" | grep "^$1$" >/dev/null 2>&1 && return
-	sudo -u "$name" yes | $aurhelper -S --noconfirm "$1" >/dev/null 2>&1
+	sudo -u "$name" yes | $aurhelper -S --noconfirm "$1" #>/dev/null 2>&1
 	}
 
 pipinstall() { \
     #dialog --title "LARBS Installation" --infobox "Installing the Python package \`$1\` ($n of $total). $1 $2" 5 70
-	command -v pip || installpkg python-pip >/dev/null 2>&1
+	command -v pip || installpkg python-pip #>/dev/null 2>&1
 	yes | pip install "$1"
 	}
 
@@ -226,24 +227,19 @@ manualinstall $aurhelper || error "Failed to install AUR helper."
 # and all build dependencies are installed.
 installationloop
 
-# TODO : temporal fix for permission of .local folder
-chown -R gaetan /home/gaetan/
-
 # Install the dotfiles in the user's home directory
-#putgitrepo "$dotfilesrepo" "/home/$name" "$repobranch"
 echo "Cloning dotfiles repo"
 putgitrepo "$dotfilesrepo" "/home/$name/.dotfiles"
-#rm -rf /home/gaetan/.config/*
-bash /home/$name/.dotfiles/stow-everything.sh
+sudo -u "$name" bash /home/$name/.dotfiles/stow_everything.sh
 
 # Installing oh-my-zsh
 #sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 
 # Installing p10k
-git clone --depth=1 https://github.com/romkatv/powerlevel10k.git $ZSH_CUSTOM/themes/powerlevel10k
+putgitrepo https://github.com/romkatv/powerlevel10k.git $ZSH_CUSTOM/themes/powerlevel10k
 
 # Installing zsh-autosuggestions
-git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+putgitrepo https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
 
 rm -f "/home/$name/README.md" "/home/$name/LICENSE"
 

@@ -20,6 +20,7 @@
 A,nodejs,"is necessary for coc.nvim to work."
 ,npm,""
 ,pa-applet,"is an applet for pulse audio"
+A,pamac-tray-appindicator,"helps notifying when updates are available."
 A,polybar,"is an alternative status bar."
 P,pynvim,"is a dependency for semshi (vim plugin)."
 ,python-pip,"is the python package manager."
