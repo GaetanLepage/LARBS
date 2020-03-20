@@ -184,39 +184,6 @@ install_zsh() { # Installs oh-my-zsh, powerlevel10k and zsh-autosuggestions
     putgitrepo https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
     }
 
-install_nerd_font() {
-    font=$1
-    version=$2
-    if [ "$#" -e 2 ]; then
-        complete_url="$base_url""$font"/"$version"/complete/"$font"\%20"$version"%20Nerd%20Font%20Complete.ttf
-        output_file="$font $version Nerd Font Complete.ttf"
-    else
-        version_bis=$3 # when version is in two words
-        complete_url="$base_url""$font"/"$version"-"$version_bis"/complete/"$font"\%20"$version"\%20"$version_bis"%20Nerd%20Font%20Complete.ttf
-        output_file="$font $version $version_bis Nerd Font Complete.ttf"
-    fi
-
-    sudo -u "$name" curl -fLo \"/home/"$name"/.fonts/"$output_file"\" $complete_url
-    }
-
-install_nerd_fonts() {
-    # Creating ~/.fonts directory
-    sudo -u "$name" mkdir -p /home/$name/.fonts
-
-    base_url="https://github.com/ryanoasis/nerd-fonts/raw/master/patched-fonts/"
-
-    #Ubuntu
-    install_nerd_font Ubuntu Bold Italic
-    install_nerd_font Ubuntu Bold
-    install_nerd_font Ubuntu Condensed
-    install_nerd_font Ubuntu Light Italic
-    install_nerd_font Ubuntu Light
-    install_nerd_font Ubuntu Medium Italic
-    install_nerd_font Ubuntu Medium
-    install_nerd_font Ubuntu Regular Italic
-    install_nerd_font Ubuntu Regular
-    }
-
 systembeepoff() { dialog --infobox "Getting rid of that retarded error beep sound..." 10 50
 	rmmod pcspkr
 	echo "blacklist pcspkr" > /etc/modprobe.d/nobeep.conf ;}
