@@ -184,13 +184,44 @@ install_zsh() { # Installs oh-my-zsh, powerlevel10k and zsh-autosuggestions
     putgitrepo https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
     }
 
+install_nerd_font() {
+    font=$1
+    version=$2
+    if [ "$#" -e 2 ]; then
+        complete_url="$base_url""$font"/"$version"/complete/"$font"\%20"$version"%20Nerd%20Font%20Complete.ttf
+        output_file="$font $version Nerd Font Complete.ttf"
+    else
+        version_bis=$3 # when version is in two words
+        complete_url="$base_url""$font"/"$version"-"$version_bis"/complete/"$font"\%20"$version"\%20"$version_bis"%20Nerd%20Font%20Complete.ttf
+        output_file="$font $version $version_bis Nerd Font Complete.ttf"
+    fi
+
+    sudo -u "$name" curl -fLo \"/home/"$name"/.fonts/"$output_file"\" $complete_url
+    }
+
+install_nerd_fonts() {
+    # Creating ~/.fonts directory
+    sudo -u "$name" mkdir -p /home/$name/.fonts
+
+    base_url="https://github.com/ryanoasis/nerd-fonts/raw/master/patched-fonts/"
+
+    #Ubuntu
+    install_nerd_font Ubuntu Bold Italic
+    install_nerd_font Ubuntu Bold
+    install_nerd_font Ubuntu Condensed
+    install_nerd_font Ubuntu Light Italic
+    install_nerd_font Ubuntu Light
+    install_nerd_font Ubuntu Medium Italic
+    install_nerd_font Ubuntu Medium
+    install_nerd_font Ubuntu Regular Italic
+    install_nerd_font Ubuntu Regular
+    }
+
 systembeepoff() { dialog --infobox "Getting rid of that retarded error beep sound..." 10 50
 	rmmod pcspkr
 	echo "blacklist pcspkr" > /etc/modprobe.d/nobeep.conf ;}
 
 finalize(){ \
-	dialog --infobox "Preparing welcome message..." 4 50
-	echo "exec_always --no-startup-id notify-send -i ~/.local/share/larbs/larbs.png 'Welcome to LARBS:' 'Press Super+F1 for the manual.' -t 10000"  >> "/home/$name/.config/i3/config"
 	dialog --defaultno --title "All done!" --msgbox "Congrats! Provided there were no hidden errors, the script completed successfully and all the programs and configuration files should be in place.\\n\\nTo run the new graphical environment, log out and log back in as your new user, then run the command \"startx\" to start the graphical environment (it will start automatically in tty1).\\n\\n.t Luke" 12 80
 	}
 
