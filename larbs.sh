@@ -175,6 +175,7 @@ install_zsh() { # Installs oh-my-zsh, powerlevel10k and zsh-autosuggestions
     sudo -u "$name" bash install.sh --unattended --keep-zshrc
 
     #sudo -u "$name" sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" --unattended --keep-zshrc
+    ZSH_CUSTOM=$(sudo -u "$name" echo $ZSH_CUSTOM)
 
     # Installing p10k
     putgitrepo https://github.com/romkatv/powerlevel10k.git $ZSH_CUSTOM/themes/powerlevel10k
