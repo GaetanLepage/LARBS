@@ -5,6 +5,7 @@
 ,dosfstools,"allows your computer to access dos-like filesystems."
 ,dunst,"is a suckless notification system"
 ,feh,"is a fast and light imlib2-based image viewer."
+,flameshot,"is an awesome screen shot capture tool."
 ,htop,"is a better version of top"
 ,i3-gaps,"is the main graphical user interface and window manager."
 ,i3blocks,"is the status bar."
