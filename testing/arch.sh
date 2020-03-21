@@ -92,6 +92,9 @@ EOF
 # Load french keyboard layout
 loadkeys fr-latin1
 
+# create partitions
+create_partitions
+
 # Set pacman options
 sed -i 's/#\(Color\)/\1/' /etc/pacman.conf
 sed -i 's/#\(TotalDownload\)/\1/' /etc/pacman.conf
