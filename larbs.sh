@@ -216,8 +216,8 @@ preinstallmsg || error "User exited."
 
 adduserandpass || error "Error adding username and/or password."
 
-# manually creating .local directories
-#sudo -u "$name" mkdir -p /home/$name/.local/bin /home/$name/.local/share /home/$name/Downloads
+# manually creating Downloads directories
+sudo -u "$name" mkdir -p /home/$name/Downloads
 
 set_pacman_options
 

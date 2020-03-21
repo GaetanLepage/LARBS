@@ -5,6 +5,90 @@
 #DO NOT RUN THIS YOURSELF because Step 1 is it reformatting /dev/sda WITHOUT confirmation,
 #which means RIP in peace qq your data unless you've already backed up all of your drive.
 
+
+#############
+# FUNCTIONS #
+#############
+
+create_partitions() {
+    #dialog --no-cancel --inputbox "Enter partitionsize in gb, separated by space (swap & root)." 10 60 2>psize
+
+    #IFS=' ' read -ra SIZE <<< $(cat psize)
+
+    #re='^[0-9]+$'
+    #if ! [ ${#SIZE[@]} -eq 2 ] || ! [[ ${SIZE[0]} =~ $re ]] || ! [[ ${SIZE[1]} =~ $re ]] ; then
+        #SIZE=(12 25);
+    #fi
+
+    # cat <<EOF | fdisk /dev/sda
+    # g
+    # n
+    # p
+    #
+    #
+    # +200M
+    # n
+    # p
+    #
+    #
+    # +${SIZE[0]}G
+    # n
+    # p
+    #
+    #
+    # +${SIZE[1]}G
+    # n
+    # p
+    #
+    #
+    # w
+    # EOF
+    # partprobe
+    #
+    # yes | mkfs.ext4 /dev/sda4
+    # yes | mkfs.ext4 /dev/sda3
+    # yes | mkfs.ext4 /dev/sda1
+    # mkswap /dev/sda2
+    # swapon /dev/sda2
+    # mount /dev/sda3 /mnt
+    # mkdir -p /mnt/boot
+    # mount /dev/sda1 /mnt/boot
+    # mkdir -p /mnt/home
+    # mount /dev/sda4 /mnt/home
+
+    # Erase partition table
+    wipefs -a -f /dev/sda
+
+    # Create partitions
+    cat <<EOF | fdisk /dev/sda
+g
+n
+
+
++450M
+t
+1
+n
+
+
+
+w
+EOF
+
+    partprobe
+
+    #yes | mkfs.ext4 /dev/sda4
+    #yes | mkfs.ext4 /dev/sda3
+    yes | mkfs.fat -F32 /dev/sda1
+    yes | mkfs.ext4 /dev/sda2
+    #mkswap /dev/sda2
+    #swapon /dev/sda2
+    }
+
+##########
+# SCRIPT #
+##########
+
 # Load french keyboard layout
 loadkeys fr-latin1
 
@@ -28,80 +112,8 @@ dialog --no-cancel --inputbox "Enter a name for your computer." 10 60 2> comp
 
 dialog --title "Time Zone select" --yesno "Do you want use the default time zone(Europe/Paris)?.\n\nPress no for select your own time zone"  10 60 && echo "Europe/Paris" > tz.tmp || tzselect > tz.tmp
 
-#dialog --no-cancel --inputbox "Enter partitionsize in gb, separated by space (swap & root)." 10 60 2>psize
-
-#IFS=' ' read -ra SIZE <<< $(cat psize)
-
-#re='^[0-9]+$'
-#if ! [ ${#SIZE[@]} -eq 2 ] || ! [[ ${SIZE[0]} =~ $re ]] || ! [[ ${SIZE[1]} =~ $re ]] ; then
-    #SIZE=(12 25);
-#fi
-
 timedatectl set-ntp true
 
-# cat <<EOF | fdisk /dev/sda
-# g
-# n
-# p
-#
-#
-# +200M
-# n
-# p
-#
-#
-# +${SIZE[0]}G
-# n
-# p
-#
-#
-# +${SIZE[1]}G
-# n
-# p
-#
-#
-# w
-# EOF
-# partprobe
-#
-# yes | mkfs.ext4 /dev/sda4
-# yes | mkfs.ext4 /dev/sda3
-# yes | mkfs.ext4 /dev/sda1
-# mkswap /dev/sda2
-# swapon /dev/sda2
-# mount /dev/sda3 /mnt
-# mkdir -p /mnt/boot
-# mount /dev/sda1 /mnt/boot
-# mkdir -p /mnt/home
-# mount /dev/sda4 /mnt/home
-
-# Erase partition table
-wipefs -a -f /dev/sda
-
-# Create partitions
-cat <<EOF | fdisk /dev/sda
-g
-n
-
-
-+450M
-t
-1
-n
-
-
-
-w
-EOF
-
-partprobe
-
-#yes | mkfs.ext4 /dev/sda4
-#yes | mkfs.ext4 /dev/sda3
-yes | mkfs.fat -F32 /dev/sda1
-yes | mkfs.ext4 /dev/sda2
-#mkswap /dev/sda2
-#swapon /dev/sda2
 mount /dev/sda2 /mnt
 #mount /dev/sda3 /mnt
 mkdir -p /mnt/boot
