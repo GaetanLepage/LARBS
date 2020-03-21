@@ -184,6 +184,13 @@ install_zsh() { # Installs oh-my-zsh, powerlevel10k and zsh-autosuggestions
     putgitrepo https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
     }
 
+configure_flameshot() {
+    flameshot config --maincolor red &
+    flameshot config --showhelp false &
+    flameshot config --trayicon false &
+    flameshot config --autostart false &
+    }
+
 systembeepoff() { dialog --infobox "Getting rid of that retarded error beep sound..." 10 50
 	rmmod pcspkr
 	echo "blacklist pcspkr" > /etc/modprobe.d/nobeep.conf ;}
@@ -271,6 +278,9 @@ rm -f "/home/$name/README.md" "/home/$name/LICENSE"
 
 # Installing zsh tools
 install_zsh
+
+# Configure flameshot
+configure_flameshot
 
 # Most important command! Get rid of the beep!
 systembeepoff
