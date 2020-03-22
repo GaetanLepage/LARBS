@@ -246,7 +246,6 @@ installpkg curl
 installpkg base-devel
 installpkg git
 installpkg ntp
-installpkg systemd
 
 dialog --title "LARBS Installation" --infobox "Synchronizing system time to ensure successful and secure installation of software..." 4 70
 ntp 0.fr.pool.ntp.org >/dev/null 2>&1
