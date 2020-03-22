@@ -282,6 +282,9 @@ installationloop
 echo "Cloning dotfiles repo"
 putgitrepo "$dotfilesrepo" "/home/$name/.dotfiles"
 
+# Manually delete existing gtk config files
+rm -f /home/"$name"/.gtkrc-2.0
+rm -f /home/"$name"/.config/gtk-3.0/settings.ini
 sudo -u "$name" bash /home/$name/.dotfiles/stow_everything.sh
 
 rm -f "/home/$name/README.md" "/home/$name/LICENSE"
