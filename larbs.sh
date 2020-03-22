@@ -29,8 +29,8 @@ elif type apt >/dev/null 2>&1; then
 	grepseq="\"^[PGU]*,\""
 else
     distro="arch"
-	#installpkg(){ pacman --noconfirm --needed -S "$1" >/dev/null 2>&1 ;}
-	installpkg(){ pacman --noconfirm --needed -S "$1" ;} # TODO remove
+    installpkg(){ pacman --noconfirm --needed -S "$1" >/dev/null 2>&1 ;}
+	#installpkg(){ pacman --noconfirm --needed -S "$1" ;} # TODO remove
 	grepseq="\"^[PGA]*,\""
 fi
 
@@ -112,14 +112,14 @@ manualinstall() { # Installs $1 manually if not installed. Used only for AUR hel
 	cd /tmp || return) ;}
 
 maininstall() { # Installs all needed programs from main repo.
-    #dialog --title "LARBS Installation" --infobox "Installing \`$1\` ($n of $total). $1 $2" 5 70
+    dialog --title "LARBS Installation" --infobox "Installing \`$1\` ($n of $total). $1 $2" 5 70
 	installpkg "$1"
 	}
 
 gitmakeinstall() {
 	progname="$(basename "$1")"
 	dir="$repodir/$progname"
-	#dialog --title "LARBS Installation" --infobox "Installing \`$progname\` ($n of $total) via \`git\` and \`make\`. $(basename "$1") $2" 5 70
+    dialog --title "LARBS Installation" --infobox "Installing \`$progname\` ($n of $total) via \`git\` and \`make\`. $(basename "$1") $2" 5 70
 	sudo -u "$name" git clone --depth 1 "$1" "$dir" >/dev/null 2>&1 || { cd "$dir" || return ; sudo -u "$name" git pull --force origin master;}
 	cd "$dir" || exit
 	make >/dev/null 2>&1
@@ -127,14 +127,14 @@ gitmakeinstall() {
 	cd /tmp || return ;}
 
 aurinstall() { \
-    #dialog --title "LARBS Installation" --infobox "Installing \`$1\` ($n of $total) from the AUR. $1 $2" 5 70
+    dialog --title "LARBS Installation" --infobox "Installing \`$1\` ($n of $total) from the AUR. $1 $2" 5 70
 	echo "$aurinstalled" | grep "^$1$" >/dev/null 2>&1 && return
-    sudo -u "$name" $aurhelper -S --noconfirm "$1" #>/dev/null 2>&1
+    sudo -u "$name" $aurhelper -S --noconfirm "$1" >/dev/null 2>&1
 	}
 
 pipinstall() { \
-    #dialog --title "LARBS Installation" --infobox "Installing the Python package \`$1\` ($n of $total). $1 $2" 5 70
-	command -v pip || installpkg python-pip #>/dev/null 2>&1
+    dialog --title "LARBS Installation" --infobox "Installing the Python package \`$1\` ($n of $total). $1 $2" 5 70
+	command -v pip || installpkg python-pip >/dev/null 2>&1
 	yes | pip install "$1"
 	}
 
@@ -145,9 +145,9 @@ installationloop() { \
 	while IFS=, read -r tag program comment; do
 		n=$((n+1))
 		echo "$comment" | grep "^\".*\"$" >/dev/null 2>&1 && comment="$(echo "$comment" | sed "s/\(^\"\|\"$\)//g")"
-        echo "#############################################################"
-        echo "Installing the package \`$program\` ($n of $total)"
-        echo "#############################################################"
+        #echo "#############################################################"
+        #echo "Installing the package \`$program\` ($n of $total)"
+        #echo "#############################################################"
 		case "$tag" in
 			"A") aurinstall "$program" "$comment" ;;
 			"G") gitmakeinstall "$program" "$comment" ;;
@@ -157,12 +157,12 @@ installationloop() { \
 	done < /tmp/progs.csv ;}
 
 putgitrepo() { # Downloads a gitrepo $1 and places the files in $2 only overwriting conflicts
-	#dialog --infobox "Downloading and installing config files..." 4 60
+    dialog --infobox "Downloading and installing config files..." 4 60
 	[ -z "$3" ] && branch="master" || branch="$repobranch"
 	dir=$(mktemp -d)
 	[ ! -d "$2" ] && mkdir -p "$2"
     chown -R "$name:wheel" "$dir" "$2"
-	sudo -u "$name" git clone -b "$branch" --depth 1 "$1" "$dir" #>/dev/null 2>&1
+	sudo -u "$name" git clone -b "$branch" --depth 1 "$1" "$dir" >/dev/null 2>&1
     sudo -u "$name" cp -rfT "$dir" "$2"
 	}
 
