@@ -8,7 +8,7 @@
 ,htop,"is a better version of top"
 ,i3-gaps,"is the main graphical user interface and window manager."
 ,i3blocks,"is the status bar."
-A,i3lock-fancy-git,"is a lock script for i3."
+,i3lock,"is the lock screen for i3."
 ,kitty,"is the terminal."
 ,lightdm-gtk-greeter-settings,"is the display manager."
 ,lxappearance-gtk3,"is a UI that helps customize the appearance."
