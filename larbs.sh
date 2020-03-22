@@ -166,6 +166,23 @@ putgitrepo() { # Downloads a gitrepo $1 and places the files in $2 only overwrit
     sudo -u "$name" cp -rfT "$dir" "$2"
 	}
 
+configure_lightdm() {
+    # Enable lightdm service
+    systemctl enable lightdm
+
+    # Background image
+    cp /home/"$name"/.dotfiles/wallpaper/.config/wall.png /etc/lightdm/
+
+    # User icon
+    cp /home/"$name"/.dotfiles/wallpaper/.config/icon_arch.png /etc/lightdm/
+
+    # Config file
+    cp /home/"$name"/.dotfiles/lightdm/lightdm.conf /etc/lightdm/
+
+    # greeter config file
+    cp /home/"$name"/.dotfiles/lightdm/lightdm-gtk-greeter.conf /etc/lightdm/
+    }
+
 install_zsh() { # Installs oh-my-zsh, powerlevel10k and zsh-autosuggestions
     # Make zsh the default shell for the user.
     sed -i "s/^$name:\(.*\):\/bin\/.*/$name:\1:\/bin\/zsh/" /etc/passwd
@@ -271,6 +288,9 @@ rm -f "/home/$name/README.md" "/home/$name/LICENSE"
 
 # Installing zsh tools
 install_zsh
+
+# Configure lightdm
+configure_lightdm
 
 # Configure flameshot
 configure_flameshot
