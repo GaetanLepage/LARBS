@@ -199,6 +199,12 @@ install_zsh() { # Installs oh-my-zsh, powerlevel10k and zsh-autosuggestions
 
     # Installing zsh-autosuggestions
     putgitrepo https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+
+    # Installing zsh-syntax-highlighting
+    putgitrepo https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+
+    # Installing zsh-vim-mode
+    putgitrepo https://github.com/softmoth/zsh-vim-mode ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-vim-mode
     }
 
 systembeepoff() { dialog --infobox "Getting rid of that retarded error beep sound..." 10 50
