@@ -45,13 +45,6 @@ set_pacman_options() {\
     sed -i 's/#\(Color\)/\1/' /etc/pacman.conf
     grep "^Color" /etc/pacman.conf >/dev/null || sed -i "s/^#Color/Color/" /etc/pacman.conf
     grep "^TotalDownload" /etc/pacman.conf >/dev/null || sed -i "s/^#TotalDownload/TotalDownload/" /etc/pacman.conf
-    #sed -i 's/#\(TotalDownload\)/\1/' /etc/pacman.conf
-
-    # Changing default pacman mirror
-    MIR_LIST="/etc/pacman.d/mirrorlist"
-    FR_SERV=$(grep -A 1 -m 1 "## France" $MIR_LIST | tail -1)
-    echo $FR_SERV | cat - $MIR_LIST > tmp
-    mv tmp $MIR_LIST
     }
 
 selectdotfiles() { \
@@ -300,9 +293,6 @@ install_zsh
 
 # Configure lightdm
 configure_lightdm
-
-# Configure flameshot
-configure_flameshot
 
 # Most important command! Get rid of the beep!
 systembeepoff
